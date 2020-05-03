@@ -1039,8 +1039,8 @@ var QuizWiz = function(config) {
               // var totalSelected = selectedCorrect + selectedIncorrect;
               var right = selectedCorrect + unselectedIncorrect;
               var wrong = unselectedCorrect + selectedIncorrect;
-              var possible = +this.possible(e);
-              var curscore = +this.score(e).value || 0;
+              var possible = this.parse(this.possible(e));
+              var curscore = this.parse(this.score(e).value) || 0;
               var diff = (right > wrong ? right - wrong : 0) * possible / total;
               var calc = {
                 'n' : total,
@@ -1065,8 +1065,8 @@ var QuizWiz = function(config) {
               var selectedIncorrect = e.querySelectorAll('div.answers > div.answer_group > div.answer.selected_answer.wrong_answer:not(.skipped)').length;
               var right = selectedCorrect;
               var wrong = total - selectedCorrect;
-              var possible = +this.possible(e);
-              var curscore = +this.score(e).value || 0;
+              var possible = this.parse(this.possible(e));
+              var curscore = this.parse(this.score(e).value) || 0;
               var calc = {
                 'n' : total,
                 'right' : right,
@@ -1106,6 +1106,18 @@ var QuizWiz = function(config) {
     };
     this.answers = function(e) {
       return e.querySelector('div#answers div.answer');
+    };
+    this.parse = function(e) {
+      let testlocale = (12345678.9).toLocaleString();
+      switch (testlocale) {
+          case "12,345,678.9":
+              return Number.parseFloat(e.replace(/,/g, ""));
+          case "12.345.678,9":
+              return Number.parseFloat(e.replace(/./g, "").replace(",","."));
+          default:
+            console.warn("Unrecognized locale");
+            return Number.parseFloat(e);
+      };
     };
     this.possible = function(e) {
       var points;
